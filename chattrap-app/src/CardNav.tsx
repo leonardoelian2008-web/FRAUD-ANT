@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 
 interface LinkItem {
   label: string;
@@ -16,69 +17,149 @@ interface CardNavProps {
   logoAlt: string;
   items: NavItem[];
   cta: { label: string; href: string };
-  cardEffect?: string;
-  openOn?: string;
-  surface?: string;
   stagger?: number;
-  bounce?: number;
-  menuLabel?: boolean | string;
   speed?: number;
-  cardHeight?: number;
   maxWidth?: number;
-  intro?: boolean;
 }
 
-export default function CardNav({ logo, logoAlt, items, cta }: CardNavProps) {
+export default function CardNav({
+  logo,
+  logoAlt,
+  items,
+  cta,
+  stagger = 100,
+  speed = 450,
+  maxWidth = 1152,
+}: CardNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const closeMenu = () => setIsOpen(false);
+
   return (
-    <div className="sticky top-0 z-50 w-full px-4 pt-4 pb-2 bg-slate-950/40 backdrop-blur-md">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 py-3 rounded-full bg-slate-900/90 backdrop-blur-xl border border-slate-800 text-white shadow-2xl transition-all duration-300">
-        
-        <button 
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition">
-          <span className="text-base">☰</span>
-          <span>Menu</span>
-        </button>
+    <header className="sticky top-0 z-50 w-full px-4 pt-4 pb-2">
+      <div className="relative mx-auto" style={{ maxWidth }}>
+        <nav className="relative z-20 flex items-center justify-between px-5 sm:px-7 py-3 rounded-full bg-white/90 backdrop-blur-xl border border-green-100 shadow-lg shadow-green-900/5">
 
-        <div className="flex items-center space-x-2 cursor-pointer">
-          <img src={logo} alt={logoAlt} className="w-8 h-8 object-contain" />
-          <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-            ChatTrap
-          </span>
-        </div>
+          {/* MENU BUTTON */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? 'Tutup menu' : 'Buka menu'}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-green-50 text-green-800 hover:bg-yellow-100 transition-all duration-300 active:scale-95"
+          >
+            <span className={`transition-transform duration-500 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+              {isOpen ? <X size={19} /> : <Menu size={19} />}
+            </span>
+            <span className="font-semibold text-sm">
+              {isOpen ? 'Tutup' : 'Menu'}
+            </span>
+          </button>
 
-        <a 
-          href={cta.href} 
-          className="px-5 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-semibold text-sm transition shadow-lg shadow-indigo-500/25">
-          {cta.label}
-        </a>
-      </nav>
+          {/* LOGO CENTER */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3 cursor-pointer group"
+            onClick={closeMenu}
+          >
+            <img
+              src={logo}
+              alt={logoAlt}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300"
+            />
 
-      {isOpen && (
-        <div className="absolute top-20 left-6 right-6 max-w-6xl mx-auto bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-3xl p-6 shadow-2xl grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn text-slate-100 z-50">
-          {items.map((item, idx) => (
-            <div key={idx} className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700/60 space-y-3 hover:border-indigo-500/50 transition">
-              <h4 className="font-bold text-white text-base">{item.label}</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
-              <ul className="space-y-2 pt-2 border-t border-slate-700/60">
-                {item.links.map((link, lIdx) => (
-                  <li key={lIdx}>
-                    <a 
-                      href={link.href} 
-                      onClick={() => setIsOpen(false)}
-                      className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition flex items-center justify-between">
-                      <span>{link.label}</span>
-                      <span>→</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            <div className="hidden sm:block">
+              <h2 className="font-extrabold text-lg tracking-tight text-green-950">
+                FRAUD-ANT
+              </h2>
+              <p className="text-[10px] text-slate-500 font-medium">
+                Guardians of Digital Space
+              </p>
             </div>
-          ))}
+          </div>
+
+          {/* CTA */}
+          <a
+            href={cta.href}
+            onClick={closeMenu}
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-green-800 to-green-600 hover:from-green-700 hover:to-green-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-green-800/20 hover:-translate-y-0.5 active:scale-95 transition-all duration-300"
+          >
+            {cta.label}
+            <ArrowUpRight size={16} />
+          </a>
+        </nav>
+
+        {/* ANIMATED CARD PANEL */}
+        <div
+          className={`absolute top-[calc(100%+10px)] left-0 right-0 z-10 overflow-hidden transition-all ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            isOpen
+              ? 'max-h-[700px] opacity-100 translate-y-0 visible'
+              : 'max-h-0 opacity-0 -translate-y-5 invisible'
+          }`}
+          style={{ transitionDuration: `${speed}ms` }}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-2">
+            {items.map((item, idx) => (
+              <div
+                key={idx}
+                className={`relative overflow-hidden rounded-3xl border border-green-100 bg-white/95 backdrop-blur-xl p-6 shadow-xl shadow-green-950/10 transition-all ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-yellow-300 hover:shadow-2xl ${
+                  isOpen
+                    ? 'opacity-100 translate-y-0 scale-100'
+                    : 'opacity-0 translate-y-8 scale-95'
+                }`}
+                style={{
+                  transitionDuration: `${speed}ms`,
+                  transitionDelay: `${isOpen ? idx * stagger : 0}ms`,
+                }}
+              >
+                <div className="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-yellow-100/70 blur-2xl pointer-events-none" />
+
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-green-700">
+                      FRAUD-ANT / 0{idx + 1}
+                    </span>
+                    <span className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-green-800">
+                      <ArrowUpRight size={16} />
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-extrabold text-green-950 mb-2">
+                    {item.label}
+                  </h3>
+
+                  <p className="text-xs text-slate-500 leading-relaxed mb-5">
+                    {item.description}
+                  </p>
+
+                  <div className="border-t border-green-100 pt-4 space-y-2">
+                    {item.links.map((link, linkIdx) => (
+                      <a
+                        key={linkIdx}
+                        href={link.href}
+                        onClick={closeMenu}
+                        className="group flex items-center justify-between py-2 text-sm font-semibold text-slate-600 hover:text-green-700 transition-colors duration-200"
+                      >
+                        <span>{link.label}</span>
+                        <ArrowUpRight
+                          size={15}
+                          className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
-    </div>
+
+        {isOpen && (
+          <button
+            aria-label="Tutup menu"
+            onClick={closeMenu}
+            className="fixed inset-0 top-0 z-[-1] cursor-default"
+          />
+        )}
+      </div>
+    </header>
   );
 }
